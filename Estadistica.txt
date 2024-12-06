@@ -1,0 +1,23 @@
+----------------------------------------------------
+|		DATOS DE LOS USUARIOS		   |
+----------------------------------------------------
+
+Cedula: 31489733
+Nombre: Leonardo
+Direccion: Santa Teresa
+N veces que uso la aplicacion: 7
+
+----------------------------------------------------
+|		DATOS DE LOS VEHICULOS		   |
+----------------------------------------------------
+
+ID del sector: ID3
+Nombre del Sector: Centro
+Cedula del Chofer: 34567890
+Placa del Vehiculo: ABC-033
+Modelo del Vehiculo: Corolla
+Marca del Vehiculo: Toyota
+Año del Vehiculo: 2019
+Disponibilidad del Vehiculo: No disponible
+N veces que uso la aplicacion: 3
+
