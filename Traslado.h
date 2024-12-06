@@ -8,6 +8,7 @@
 #include <vector>
 #include "Usuario.h"
 #include "Sectores.h"
+#include "Cola.h"
 
 using namespace std;
 
@@ -28,12 +29,17 @@ public:
      * @param placaVehiculo Placa del vehículo a marcar como disponible.
      */
     void finalizarTraslado(const string& placaVehiculo);
+    
+    void GuardarInformacionUsuarios(int cedula);
 
 private:
     Usuario _usuario;       ///< Usuario que solicita el traslado.
     Sector _sectorOrigen;   ///< Sector de origen del traslado.
     Sector _sectorDestino;  ///< Sector de destino del traslado.
-    string _fecha;          ///< Fecha en la que se solicita el traslado
+    string _fecha;  		///< Fecha en la que se solicita el traslado
+    Cola cola;
+    Cola* frente = NULL;
+	Cola* final = NULL; 
 
     /**
      * Carga los datos del usuario a partir de su cédula.
@@ -60,6 +66,8 @@ void Traslado::solicitar(Sectores& sectores) {
     string cedula;
     cout << "Ingrese la cédula del usuario: ";
     cin >> cedula;
+    int cedulaInt = atoi(cedula.c_str());
+    GuardarInformacionUsuarios(cedulaInt);
 
     // Solicitar los sectores de origen y destino
     cout << "Ingrese el ID del sector de origen. Ejemplo: ID#: ";
@@ -85,10 +93,10 @@ void Traslado::solicitar(Sectores& sectores) {
     }
 
     if (!band1) {
-        cout << "No se encuentra ningún vehículo en el sector de origen. Por favor intentar más tarde." << endl;
+        cout << "No se encuentra ningun vehiculo en el sector de origen. Por favor intentar mas tarde." << endl;
         return;
     } else if (!band2) {
-        cout << "El ID del sector de destino no coincide con alguno dado. Por favor intentar más tarde." << endl;
+        cout << "El ID del sector de destino no coincide con alguno dado. Por favor intentar mas tarde." << endl;
         return;
     }
 
@@ -100,6 +108,32 @@ void Traslado::solicitar(Sectores& sectores) {
     seleccionarVehiculo(sectores);
     Usuario u;
     u.actualizarUsoApp(cedula);
+}
+
+void Traslado::GuardarInformacionUsuarios(int cedula){
+	ifstream archivo("Datos Usuarios.txt");
+	if (!archivo.is_open()) {
+        cout << "Error al abrir el archivo de usuarios." << endl;
+        return;
+    }
+    
+    string linea;
+    archivo.seekg(0);
+    while (getline(archivo, linea)) {
+        char* lineaChar = const_cast<char*>(linea.c_str());
+        char* cedulaStr = strtok(lineaChar, ":");
+        int cedulaArchivo = atoi(cedulaStr);
+
+        if (cedulaArchivo == cedula) {
+            _usuario.setCedula(cedulaArchivo);
+            _usuario.setNombre(strtok(NULL, ":"));
+            _usuario.setDireccion(strtok(NULL, ":"));
+            archivo.close();
+            return;
+        }
+    }
+
+    archivo.close();
 }
 
 /**
@@ -184,11 +218,12 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     archivo.close();
 
     if (!disponible) {
-        cout << "No se encuentra ningún vehículo disponible en el sector de origen." << endl;
+    	cola.InsertarElemento(frente,final,_usuario);
+        cout << "No se encuentra ningun vehiculo disponible en el sector de origen." << endl;
         return;
     }
 
-    cout << "\n\nVehículos Disponibles." << endl << endl;
+    cout << "\n\nVehiculos Disponibles." << endl << endl;
     cout << "-----------------------------------------------" << endl;
     for (int i = 0; i < conductoresDisponibles.size(); i++) {
         cout << conductoresDisponibles[i] << endl;
@@ -197,12 +232,12 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
 
     // Permitir al usuario seleccionar el vehículo
     int seleccion;
-    cout << "Seleccione el número del vehículo para iniciar el traslado: ";
+    cout << "Seleccione el numero del vehiculo para iniciar el traslado: ";
     cin >> seleccion;
 
     // Validar la selección del usuario
     if (seleccion < 1 || seleccion > conductoresDisponibles.size()) {
-        cout << "Selección inválida. Intente de nuevo." << endl;
+        cout << "Seleccion invalida. Intente de nuevo." << endl;
         return;
     }
 
@@ -246,7 +281,7 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     remove("Datos Vehiculo.txt");
     rename("Temp.txt", "Datos Vehiculo.txt");
 
-    cout << "El vehículo ha sido seleccionado y está en camino." << endl;
+    cout << "El vehiculo ha sido seleccionado y esta en camino." << endl;
 }
 
 /**
@@ -284,9 +319,9 @@ void Traslado::finalizarTraslado(const string& placaVehiculo) {
     rename("Temp.txt", "Datos Vehiculo.txt");
 
     if (actualizado) {
-        cout << "El vehículo con placa " << placaVehiculo << " ha sido marcado como disponible." << endl;
+        cout << "El vehiculo con placa " << placaVehiculo << " ha sido marcado como disponible." << endl;
     } else {
-        cout << "No se encontró el vehículo con la placa especificada o ya estaba disponible." << endl;
+        cout << "No se encontro el vehiculo con la placa especificada o ya estaba disponible." << endl;
     }
 }
 

@@ -286,7 +286,7 @@ class Usuario {
             remove("Datos Usuarios.txt");
             rename("temp.txt", "Datos Usuarios.txt");
 
-            cout << (band ? "Este Usuario ha usado la aplicación con éxito." : "El Usuario no se ha encontrado.") << endl;
+            cout << (band ? "Este Usuario ha usado la aplicacion con exito." : "El Usuario no se ha encontrado.") << endl;
         }
 };
 #endif
