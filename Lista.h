@@ -2,7 +2,6 @@
 #define LISTA_H
 
 #include <iostream>
-#include <vector>
 #include <string>
 #include <sstream>
 #include "Vehiculo.h" 
@@ -11,70 +10,112 @@ using namespace std;
 
 class Lista {
 private:
-    vector<Vehiculo> vehiculos;  // Vector para almacenar los vehiculos
+    Vehiculo info;
+	Lista *siguiente;
 
 public:
-    // Agregar un vehiculo a la lista
-    void agregarVehiculo(const Vehiculo& vehiculo) {
-        vehiculos.push_back(vehiculo);
-    }
-
-    // Eliminar un vehiculo de la lista dado su indice
-    void eliminarVehiculo(int index) {
-        if (index >= 0 && index < vehiculos.size()) {
-            vehiculos.erase(vehiculos.begin() + index);
-        }
-    }
-
-    // Mostrar los vehiculos disponibles en la lista
-    void mostrarVehiculos() {
-        bool encontrado = false;
-        cout << "\nVeh?culos Disponibles:" << endl;
-        cout << "-----------------------------------------------" << endl;
-
-        for (int i = 0; i < vehiculos.size(); i++) {
-            // Verificar disponibilidad antes de mostrar
-            if (vehiculos[i].getDisponible()) {
-                cout << i + 1 << ". Conductor: " << vehiculos[i].getChofer().getNombreConductor() << endl;
-                cout << "   Placa: " << vehiculos[i].getPlaca() << endl;
-                cout << "   Modelo: " << vehiculos[i].getModelo() << endl;
-                cout << "   Marca: " << vehiculos[i].getMarca() << endl;
-                cout << "   A?o: " << vehiculos[i].getAnio() << endl;
-                cout << "-----------------------------------------------" << endl;
-                encontrado = true;
-            }
-        }
-
-        if (!encontrado) {
-            cout << "No hay veh?culos disponibles en el sector." << endl;
-        }
-    }
-
-    // Ordenar vehiculos por año de manera descendente
-    void ordenarPorAnio() {
-        for (int i = 0; i < vehiculos.size(); i++) {
-            for (int j = 0; j < vehiculos.size() - 1 - i; j++) {
-                if (vehiculos[j].getAnio() < vehiculos[j + 1].getAnio()) {
-                    swap(vehiculos[j], vehiculos[j + 1]);
-                }
-            }
-        }
-    }
-
-    // Seleccionar un vehiculo de la lista, usando su indice
-    Vehiculo seleccionarVehiculo(int index) {
-        if (index >= 0 && index < vehiculos.size()) {
-            // Desmarcar como disponible el veh?culo seleccionado
-            vehiculos[index].setDisponible(false);
-            return vehiculos[index];
-        }
-        return Vehiculo(); // Devolver un vehiculo vacio si el indice es incorrecto
-    }
-
-    // Obtener el tamaño de la lista de vehiculos
-    int tamano() {
-        return vehiculos.size();
-    }
+    void insertarInicio(Lista*& cabeza, Vehiculo valor){
+		Lista* nuevo = new Lista();
+		nuevo->info = valor;
+		nuevo->siguiente = cabeza;
+		cabeza = nuevo;
+	}
+	
+	void insertarFinal(Lista*& cabeza, Vehiculo valor){
+		Lista* nuevo = new Lista();
+		nuevo->info = valor;
+		nuevo->siguiente = NULL;
+		
+		if(!cabeza){
+			cabeza = nuevo;
+			return;
+		}
+		
+		Lista* temp = cabeza;
+		while(temp->siguiente){
+			temp = temp->siguiente;
+		}
+		temp->siguiente = nuevo;
+		
+	}
+	
+	void eliminar(Lista*& cabeza, Vehiculo valor){
+		if(!cabeza) return;
+		
+		if(cabeza->info == valor){
+			Lista* temp = cabeza;
+			cabeza = cabeza->siguiente;
+			delete temp;
+			return;
+		}
+		
+		Lista* temp = cabeza;
+		while(temp->siguiente && temp->siguiente->info != valor){
+			temp = temp->siguiente;
+		}
+		
+		if(temp->siguiente){
+			Lista* eliminar = temp->siguiente;
+			temp->siguiente = eliminar->siguiente;
+			delete eliminar;
+			return;
+		}	
+		cout<<"Vehiculo Eliminado de la Lista"<<endl;
+	}
+	
+	void mostrar(Lista*& cabeza) {
+		cout << "-----------------------------------------------" << endl;
+	    Lista* temp = cabeza;
+	    while (temp) {
+	        cout <<"Marca: "<<temp->info.getMarca() <<"\n";
+	        cout<<"Modelo: "<<temp->info.getModelo()<<"\n";
+	        cout<<"Anio: "<<temp->info.getAnio()<<"\n";
+	        cout<<"Placa: "<<temp->info.getPlaca()<<"\n";
+	        cout << "-----------------------------------------------" << endl;
+	        temp = temp->siguiente;
+	    }
+	}
+	
+	void BuscarVehiculo(Lista*& cabeza,int buscar){
+		if (cabeza == NULL) {
+	        return; // La lista está vacía
+	    }
+		Lista* aux = cabeza->siguiente;
+		int i = 0;
+		while(aux != NULL){
+			if(i == buscar){
+				cout<<"El elemento va a ser eliminado"<<endl;
+				eliminar(cabeza,aux->info);
+			}
+			aux = aux->siguiente;
+			i++;
+		}
+	}
+	
+	void ordenarDescendente(Lista* cabeza) {
+	    if (cabeza == NULL || cabeza->siguiente == NULL) return;
+	
+	    Lista* actual;
+	    Lista* siguiente;
+	    bool intercambiado;
+	
+	    do {
+	        intercambiado = false;
+	        actual = cabeza;
+	
+	        while (actual->siguiente != NULL) {
+	            siguiente = actual->siguiente;
+	
+	            // Comparar y, si es necesario, intercambiar valores
+	            if (actual->info.getAnio() < siguiente->info.getAnio()) {
+	                std::swap(actual->info, siguiente->info);
+	                intercambiado = true;
+	            }
+	
+	            actual = actual->siguiente;
+	        }
+	    } while (intercambiado);
+	}
 };
 
 #endif

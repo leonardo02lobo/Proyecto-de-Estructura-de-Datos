@@ -1,3 +1,5 @@
+#ifndef COLA_H
+#define COLA_H
 #include<iostream>
 
 using namespace std;
@@ -77,3 +79,5 @@ class Cola{
 		}
     }
 };
+
+#endif

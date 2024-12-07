@@ -40,6 +40,7 @@ Sectores numeroSectores;
 Cola* colaSectores = new Cola[numeroSectores.numSectores];
 Cola** frente = new Cola*[numeroSectores.numSectores];
 Cola** final = new Cola*[numeroSectores.numSectores];
+Lista** lista = new Lista*[numeroSectores.numSectores];
 
 //funcion main encargada de la administracion del programa
 //llama a la funcion meni para iniciar el flujo del programa 
@@ -155,7 +156,7 @@ void MenuServicios(){
 	int opcion = 0;
 	Sectores sectores;
 	Vehiculo vehiculo;
-	Traslado traslado(colaSectores,frente,final); 
+	Traslado traslado(colaSectores,frente,final,lista); 
 	do{
 		do{
 			system("cls");

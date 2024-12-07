@@ -23,6 +23,14 @@ class Vehiculo{
         Sector _sectorActual;    ///< Sector donde se encuentra actualmente el vehículo
         bool _disponible;        ///< Estado de disponibilidad del vehículo
 	public:
+		// Sobrecarga del operador ==
+	    bool operator==(const Vehiculo& otro) const {
+	        return (_marca == otro._marca) && (_modelo == otro._modelo) && (_anio == otro._anio);
+	    }
+	    
+	    bool operator!=(const Vehiculo& otro) const {
+	        return !(*this == otro); // Llama al operador == y niega el resultado
+	    }
 		/**
          * Constructor sin parámetros.
          * Inicializa los atributos a valores por defecto.
