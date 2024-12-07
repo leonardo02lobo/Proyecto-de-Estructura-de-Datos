@@ -79,7 +79,7 @@ class Usuario {
 
             (!archivo.is_open()) ? cout << "Error al momento de escribir en el archivo" << endl : cout << endl;
 
-            if (usuariosActivos > 5) {
+            if (usuariosActivos > 10) {
                 cout << "-----------------------------------------------------------------------------"<< endl;
                 cout << "La Cantidad De Personas Excede El Máximo. Por Favor Eliminar Algunas Personas" << endl;
                 cout << "-----------------------------------------------------------------------------"<< endl;

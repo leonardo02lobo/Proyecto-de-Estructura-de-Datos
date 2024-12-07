@@ -306,7 +306,7 @@ class Vehiculo{
 		/**
          * Actualiza la ubicación del vehículo según la placa proporcionada.
          */
-		void ActualizarUbicacionVehiculo() {
+		int ActualizarUbicacionVehiculo() {
 		    fstream archivo("Datos Vehiculo.txt", ios::in | ios::out);
 		    fstream temp("temp.txt", ios::out);
 		    string Nplaca, IDSector, linea, lineaCambio;
@@ -316,7 +316,7 @@ class Vehiculo{
 		
 		    if (!archivo.is_open()) {
 		        cout << "Error al momento de leer el archivo" << endl;
-		        return;
+		        return 0;
 		    }
 		
 			fflush(stdin);
@@ -367,6 +367,7 @@ class Vehiculo{
 		    // Reemplazar el archivo original con el temporal
 		    remove("Datos Vehiculo.txt");
 		    rename("temp.txt", "Datos Vehiculo.txt");
+		    return atoi(nuevoId.substr(2).c_str());
 		}
 		//Elimina el vehiculo con sus datos seleccionados
 		void EliminarVehiculo(){

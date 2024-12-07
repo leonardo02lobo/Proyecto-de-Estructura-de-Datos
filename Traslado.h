@@ -18,6 +18,8 @@ using namespace std;
  */
 class Traslado {
 public:
+	
+	Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final);
     /**
      * Solicita un traslado para un usuario.
      * @param sectores Referencia a la clase Sectores que contiene la información de los sectores disponibles.
@@ -31,15 +33,17 @@ public:
     void finalizarTraslado(const string& placaVehiculo);
     
     void GuardarInformacionUsuarios(int cedula);
+    
+    void RevisarCola(int id);
 
 private:
     Usuario _usuario;       ///< Usuario que solicita el traslado.
     Sector _sectorOrigen;   ///< Sector de origen del traslado.
     Sector _sectorDestino;  ///< Sector de destino del traslado.
-    string _fecha;  		///< Fecha en la que se solicita el traslado
-    Cola cola;
-    Cola* frente = NULL;
-	Cola* final = NULL; 
+    string _fecha;  	///< Fecha en la que se solicita el traslado
+	Cola* colaSectores;
+	Cola** frente;
+	Cola** final;
 
     /**
      * Carga los datos del usuario a partir de su cédula.
@@ -54,7 +58,9 @@ private:
      */
     void seleccionarVehiculo(Sectores& sectores);
 };
-
+Traslado::Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final)
+	 : colaSectores(colaSectores), frente(frente), final(final) {
+}
 /**
  * Implementación del método solicitar que permite a un usuario solicitar un traslado.
  */
@@ -218,7 +224,10 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     archivo.close();
 
     if (!disponible) {
-    	cola.InsertarElemento(frente,final,_usuario);
+    	string idString =_sectorOrigen.getId();
+    	int id = atoi(idString.substr(2).c_str());
+    	
+    	colaSectores[id].InsertarElemento(frente[id],final[id],_usuario);
         cout << "No se encuentra ningun vehiculo disponible en el sector de origen." << endl;
         return;
     }
@@ -323,6 +332,30 @@ void Traslado::finalizarTraslado(const string& placaVehiculo) {
     } else {
         cout << "No se encontro el vehiculo con la placa especificada o ya estaba disponible." << endl;
     }
+}
+
+void Traslado::RevisarCola(int id){
+	//mostrar todos los elementos de la cola y luego pedir si desea trasladarlos 
+	int opcion;
+	Cola* actual = frente[id];
+	while (actual != NULL) {
+		cout<<"Nombre: "<<actual->usuarios.getNombre()<< "\nCedula: "<<actual->usuarios.getCedula()<<"\nDireccion: "<<actual->usuarios.getDireccion()<<endl;
+		cout<<"\nDesea todavia el servicion(1.SI/2.NO): ";
+		cin>>opcion;
+		
+		if(opcion == 1){
+			Sectores sectores;
+			seleccionarVehiculo(sectores);
+			Usuario usuario = colaSectores[id].usuarios;
+			colaSectores[id].eliminarUsuario(frente[id],final[id],usuario);
+		}else if(opcion == 2){
+			colaSectores[id].eliminarUsuario(frente[id],final[id],usuario);
+		}
+		
+		system("pause");
+		system("cls");
+		actual = actual->siguiente;
+	}
 }
 
 #endif

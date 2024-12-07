@@ -41,4 +41,39 @@ class Cola{
 		    }
 		    cout << "NULL" << endl;
 		}
+		void eliminarUsuario(Cola*& frente,Cola*& final,Usuario elemento) {
+			bool band = false;
+	        if (frente == NULL) {
+	            cout << "La cola está vacía." << endl;
+	            return;
+	        }
+	
+	        Cola* actual = frente;
+	        Cola* anterior = NULL;
+	
+	        while (actual != NULL) {
+	            if (actual->usuarios.getCedula() == elemento.getCedula()) {
+	                if (anterior == NULL) { // El usuario a eliminar es el primero
+	                    frente = actual->siguiente;
+	                    if (frente == NULL) { // Si la cola queda vacía
+	                        final = NULL;
+	                    }
+	                } else {
+	                    anterior->siguiente = actual->siguiente;
+	                    if (actual == final) { // Si el usuario a eliminar es el último
+	                        final = anterior;
+	                    }
+	                }
+	                cout << "Usuario eliminado de la cola." << endl;
+	                delete actual;
+	                band = true;
+	                return;
+	            }
+	            anterior = actual;
+	            actual = actual->siguiente;
+	        }
+		if(!band){
+			cout << "Usuario no encontrado en la cola." << endl;
+		}
+    }
 };

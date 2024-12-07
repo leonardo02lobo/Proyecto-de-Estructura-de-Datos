@@ -36,6 +36,10 @@ void MenuGestion();
 void MenuServicios(); 
 void MenuConductor();
 void MenuUsuarios();
+Sectores numeroSectores;
+Cola* colaSectores = new Cola[numeroSectores.numSectores];
+Cola** frente = new Cola*[numeroSectores.numSectores];
+Cola** final = new Cola*[numeroSectores.numSectores];
 
 //funcion main encargada de la administracion del programa
 //llama a la funcion meni para iniciar el flujo del programa 
@@ -151,7 +155,7 @@ void MenuServicios(){
 	int opcion = 0;
 	Sectores sectores;
 	Vehiculo vehiculo;
-	Traslado traslado; 
+	Traslado traslado(colaSectores,frente,final); 
 	do{
 		do{
 			system("cls");
@@ -187,9 +191,11 @@ void MenuServicios(){
 			system("cls");
 		}while(opcion < 1 || opcion > 5);
 		switch(opcion){
-			case 1:
-				    vehiculo.ActualizarUbicacionVehiculo();
+			case 1:{
+				int id = vehiculo.ActualizarUbicacionVehiculo();
+				traslado.RevisarCola(id);
 				break;
+			}    
 			case 2: 
 			    traslado.solicitar(sectores);
                 break;
