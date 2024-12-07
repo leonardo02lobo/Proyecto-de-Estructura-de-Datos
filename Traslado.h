@@ -9,6 +9,7 @@
 #include "Usuario.h"
 #include "Sectores.h"
 #include "Cola.h"
+#include "Lista.h"
 
 using namespace std;
 
@@ -35,6 +36,9 @@ public:
     void GuardarInformacionUsuarios(int cedula);
     
     void RevisarCola(int id);
+    
+    private: 
+    Lista listaVehiculos;
 
 private:
     Usuario _usuario;       ///< Usuario que solicita el traslado.
@@ -188,10 +192,9 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     }
 
     string linea;
-    vector<string> conductoresDisponibles;
-    vector<string> placasDisponibles;
+      
 
-    // Buscar vehículos disponibles
+    // Buscar vehículos disponibles y agregar a la lista
     while (getline(archivo, linea)) {
         char* lineaChar = const_cast<char*>(linea.c_str());
         char* idSectorChar = strtok(lineaChar, ":");
@@ -206,17 +209,18 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
             char* anio = strtok(NULL, ":");
             char* disponibilidad = strtok(NULL, ":");
 
-            if (disponibilidad != "1") {  // Verifica que el vehículo está disponible
-                string consulta =
-                    "Cédula: " + string(cedula) + "\n" +
-                    "Nombre del Conductor: " + string(nombreConductor) + "\n" +
-                    "Placa: " + string(placa) + "\n" +
-                    "Modelo: " + string(modelo) + "\n" +
-                    "Marca: " + string(marca) + "\n" +
-                    "Año: " + string(anio) + "\n";
+            if (disponibilidad == "1") {  // Si el vehículo está disponible
+                Vehiculo vehiculo(
+                    string(cedula),
+                    string(nombreConductor),
+                    string(placa),
+                    string(modelo),
+                    string(marca),
+                    string(anio),
+                    string(disponibilidad)
+                );
 
-                conductoresDisponibles.push_back(consulta);
-                placasDisponibles.push_back(placa);  // Guarda la placa para identificar el vehículo después
+                listaVehiculos.agregarVehiculo(vehiculo);  // Agregar el vehículo a la lista
                 disponible = true;
             }
         }
@@ -224,37 +228,40 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     archivo.close();
 
     if (!disponible) {
-    	string idString =_sectorOrigen.getId();
-    	int id = atoi(idString.substr(2).c_str());
-    	
-    	colaSectores[id].InsertarElemento(frente[id],final[id],_usuario);
+        // Si no hay vehículos disponibles, añadir el usuario a la cola de espera
+        string idString = _sectorOrigen.getId();
+        int id = atoi(idString.substr(2).c_str());
+        colaSectores[id].InsertarElemento(frente[id], final[id], _usuario);
         cout << "No se encuentra ningun vehiculo disponible en el sector de origen." << endl;
         return;
     }
 
-    cout << "\n\nVehiculos Disponibles." << endl << endl;
-    cout << "-----------------------------------------------" << endl;
-    for (int i = 0; i < conductoresDisponibles.size(); i++) {
-        cout << conductoresDisponibles[i] << endl;
-        cout << "-------------------------------------------" << endl << endl;
-    }
+    // Ordenar los vehículos por año
+    listaVehiculos.ordenarPorAnio();
+
+    // Mostrar los vehículos disponibles
+    listaVehiculos.mostrarVehiculos();
 
     // Permitir al usuario seleccionar el vehículo
     int seleccion;
-    cout << "Seleccione el numero del vehiculo para iniciar el traslado: ";
+    cout << "Seleccione el número del vehículo para iniciar el traslado: ";
     cin >> seleccion;
 
     // Validar la selección del usuario
-    if (seleccion < 1 || seleccion > conductoresDisponibles.size()) {
-        cout << "Seleccion invalida. Intente de nuevo." << endl;
+    if (seleccion < 1 || seleccion > listaVehiculos.tamano()) {
+        cout << "Selección inválida. Intente de nuevo." << endl;
         return;
     }
 
-    // Actualizar la disponibilidad del vehículo seleccionado
-    string placaSeleccionada = placasDisponibles[seleccion - 1];
+    // Seleccionar el vehículo
+    Vehiculo vehiculoSeleccionado = listaVehiculos.seleccionarVehiculo(seleccion - 1);
+
+    // Actualizar la disponibilidad del vehículo en el archivo
     ifstream archivoLectura("Datos Vehiculo.txt", ios::in);
     ofstream archivoEscritura("Temp.txt", ios::out);
+
     string numeroDeVeces, NVecesFinal;
+    string placaSeleccionada = vehiculoSeleccionado.getPlaca();
 
     while (getline(archivoLectura, linea)) {
         stringstream ss(linea);
@@ -290,8 +297,9 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     remove("Datos Vehiculo.txt");
     rename("Temp.txt", "Datos Vehiculo.txt");
 
-    cout << "El vehiculo ha sido seleccionado y esta en camino." << endl;
+    cout << "El vehículo ha sido seleccionado y está en camino." << endl;
 }
+
 
 /**
  * Finaliza un traslado y actualiza la disponibilidad del vehículo.
