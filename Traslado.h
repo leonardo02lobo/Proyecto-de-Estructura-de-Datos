@@ -184,6 +184,7 @@ bool Traslado::cargarUsuarioPorCedula(int cedula) {
  */
 void Traslado::seleccionarVehiculo(Sectores& sectores) {
 	Lista* listaTemp = NULL;
+
     ifstream archivo("Datos Vehiculo.txt", ios::in);
     bool disponible = false;
 
@@ -289,7 +290,7 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     rename("Temp.txt", "Datos Vehiculo.txt");
 
     cout << "El vehiculo ha sido seleccionado y esta en camino." << endl;
-    lista[idOrigenSeleccionado]->BuscarVehiculo(listaTemp,seleccion);
+    lista[idOrigenSeleccionado]->BuscarVehiculo(listaTemp,seleccion-1);
 }
 
 /**

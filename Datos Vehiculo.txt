@@ -1,6 +1,6 @@
 ID14:El Reloj:12345678:Juan Perez:ABC-031:Golf:Volkswagen:2018:0:N_1
-ID2:Pirineos:23456789:Maria Gomez:ABC-032:Civic:Honda:2020:0:N_1
-ID3:Centro:34567890:Jose Rodriguez:ABC-033:Corolla:Toyota:2019:0:N_10
+ID2:Pirineos:23456789:Maria Gomez:ABC-032:Civic:Honda:2020:0:N_6
+ID3:Centro:34567890:Jose Rodriguez:ABC-033:Corolla:Toyota:2019:0:N_23
 ID4:La Concordia:45678901:Ana Martinez:ABC-034:Tucson:Hyundai:2022:0:N_9
 ID5:Los Chaguaramos:56789012:Carlos Hernandez:ABC-035:Renegade:Jeep:2021:1:N_0
 ID6:San Juan:67890123:Lucia Fernandez:ABC-036:Mustang:Ford:2020:1:N_0
@@ -10,7 +10,7 @@ ID9:La Popa:90123456:Andres Blanco:ABC-039:Wrangler:Jeep:2020:1:N_0
 ID10:Las Acacias:11223344:Carmen Perez:ABC-040:Tiguan:Volkswagen:2018:1:N_0
 ID1:Barrio Obrero:22334455:Ricardo Diaz:ABC-041:GLC:Mercedes-Benz:2021:0:N_1
 ID2:Pirineos:33445566:Valeria Santos:ABC-042:Accord:Honda:2019:0:N_1
-ID3:Centro:44556677:Luis Romero:ABC-043:Sonata:Hyundai:2020:1:N_1
+ID3:Centro:44556677:Luis Romero:ABC-043:Sonata:Hyundai:2020:0:N_2
 ID4:La Concordia:55667788:Mariana Medina:ABC-044:X5:BMW:2022:0:N_6
 ID5:Los Chaguaramos:66778899:Daniel Suarez:ABC-045:Sportage:Kia:2021:1:N_0
 ID6:San Juan:77889900:Laura Vargas:ABC-046:Compass:Jeep:2022:1:N_0
@@ -20,7 +20,7 @@ ID9:La Popa:10010123:Marta Contreras:ABC-049:Cayenne:Porsche:2019:1:N_0
 ID10:Las Acacias:11121314:Lucas Ramirez:ABC-050:Optima:Kia:2021:1:N_0
 ID1:Barrio Obrero:12131415:Isabel Rios:ABC-051:Veloster:Hyundai:2020:0:N_2
 ID2:Pirineos:13141516:Victor Sosa:ABC-052:Pilot:Honda:2022:0:N_1
-ID3:Centro:14151617:Elena Vargas:ABC-053:Santa Fe:Hyundai:2021:1:N_0
+ID3:Centro:14151617:Elena Vargas:ABC-053:Santa Fe:Hyundai:2021:0:N_1
 ID4:La Concordia:15161718:Alfredo Ortega:ABC-054:Sorento:Kia:2019:1:N_0
 ID5:Los Chaguaramos:16171819:Julia Campos:ABC-055:CR-V:Honda:2022:1:N_0
 ID6:San Juan:17181920:Esteban Reyes:ABC-056:T-Roc:Volkswagen:2021:1:N_0

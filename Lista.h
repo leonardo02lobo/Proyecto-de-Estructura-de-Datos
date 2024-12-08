@@ -14,6 +14,11 @@ private:
 	Lista *siguiente;
 
 public:
+	bool esVacia(Lista*& cabeza) {
+	    return cabeza == NULL;
+	}
+
+	
     void insertarInicio(Lista*& cabeza, Vehiculo valor){
 		Lista* nuevo = new Lista();
 		nuevo->info = valor;
@@ -39,29 +44,28 @@ public:
 		
 	}
 	
-	void eliminar(Lista*& cabeza, Vehiculo valor){
-		if(!cabeza) return;
-		
-		if(cabeza->info == valor){
-			Lista* temp = cabeza;
-			cabeza = cabeza->siguiente;
-			delete temp;
-			return;
-		}
-		
-		Lista* temp = cabeza;
-		while(temp->siguiente && temp->siguiente->info != valor){
-			temp = temp->siguiente;
-		}
-		
-		if(temp->siguiente){
-			Lista* eliminar = temp->siguiente;
-			temp->siguiente = eliminar->siguiente;
-			delete eliminar;
-			return;
-		}	
-		cout<<"Vehiculo Eliminado de la Lista"<<endl;
+	void eliminar(Lista*& cabeza, Vehiculo valor) {
+	    if (!cabeza) return;
+	
+	    if (cabeza->info == valor) {
+	        Lista* temp = cabeza;
+	        cabeza = cabeza->siguiente;
+	        delete temp;
+	        return;
+	    }
+	
+	    Lista* temp = cabeza;
+	    while (temp->siguiente && !(temp->siguiente->info == valor)) {
+	        temp = temp->siguiente;
+	    }
+	
+	    if (temp->siguiente) {
+	        Lista* eliminar = temp->siguiente;
+	        temp->siguiente = eliminar->siguiente;
+	        delete eliminar;
+	    }
 	}
+
 	
 	void mostrar(Lista*& cabeza) {
 		cout << "-----------------------------------------------" << endl;
@@ -75,22 +79,41 @@ public:
 	        temp = temp->siguiente;
 	    }
 	}
-	
-	void BuscarVehiculo(Lista*& cabeza,int buscar){
-		if (cabeza == NULL) {
-	        return; // La lista está vacía
+
+	void BuscarVehiculo(Lista*& cabeza, int posicion) {
+	    if (cabeza == NULL || posicion < 0) {
+	        cout << "Posición inválida o lista vacía." << endl;
+	        return;
 	    }
-		Lista* aux = cabeza->siguiente;
-		int i = 0;
-		while(aux != NULL){
-			if(i == buscar){
-				cout<<"El elemento va a ser eliminado"<<endl;
-				eliminar(cabeza,aux->info);
-			}
-			aux = aux->siguiente;
-			i++;
-		}
+	
+	    Lista* actual = cabeza;
+	    Lista* anterior = NULL;
+	    int indice = 0;
+	
+	    // Recorremos la lista buscando la posición
+	    while (actual != NULL && indice < posicion) {
+	        anterior = actual;
+	        actual = actual->siguiente;
+	        indice++;
+	    }
+	
+	    if (actual == NULL) {
+	        cout << "Posición fuera de rango." << endl;
+	        return;
+	    }
+	
+	    // Eliminamos el nodo actual
+	    if (anterior == NULL) {
+	        // Si el nodo a eliminar es el primero
+	        cabeza = actual->siguiente;
+	    } else {
+	        anterior->siguiente = actual->siguiente;
+	    }
+	
+	    delete actual;
+	    cout << "Vehículo eliminado de la lista." << endl;
 	}
+
 	
 	void ordenarDescendente(Lista* cabeza) {
 	    if (cabeza == NULL || cabeza->siguiente == NULL) return;

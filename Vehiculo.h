@@ -25,8 +25,9 @@ class Vehiculo{
 	public:
 		// Sobrecarga del operador ==
 	    bool operator==(const Vehiculo& otro) const {
-	        return (_marca == otro._marca) && (_modelo == otro._modelo) && (_anio == otro._anio);
-	    }
+		    return _placa == otro._placa; // Comparación por placa
+		}
+
 	    
 	    bool operator!=(const Vehiculo& otro) const {
 	        return !(*this == otro); // Llama al operador == y niega el resultado
