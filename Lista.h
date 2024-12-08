@@ -14,8 +14,8 @@ private:
 	Lista *siguiente;
 
 public:
-	bool esVacia(Lista*& cabeza) {
-	    return cabeza == NULL;
+	bool esVacia() {
+	    return this == NULL;
 	}
 
 	

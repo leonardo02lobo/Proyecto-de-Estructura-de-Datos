@@ -20,7 +20,7 @@ using namespace std;
 class Traslado {
 public:
 	
-	Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final,Lista**& lista);
+	Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final,Lista*& lista);
     /**
      * Solicita un traslado para un usuario.
      * @param sectores Referencia a la clase Sectores que contiene la información de los sectores disponibles.
@@ -36,6 +36,7 @@ public:
     void GuardarInformacionUsuarios(int cedula);
     
     void RevisarCola(int id);
+    void RevisarLista(int id);
 
 private:
     Usuario _usuario;       ///< Usuario que solicita el traslado.
@@ -45,7 +46,7 @@ private:
 	Cola* colaSectores;
 	Cola** frente;
 	Cola** final;
-	Lista** lista;
+	Lista* lista;
 	int idOrigenSeleccionado;
 
     /**
@@ -61,7 +62,7 @@ private:
      */
     void seleccionarVehiculo(Sectores& sectores);
 };
-Traslado::Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final,Lista**& lista)
+Traslado::Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final,Lista*& lista)
 	 : colaSectores(colaSectores), frente(frente), final(final),lista(lista) {
 }
 /**
@@ -218,7 +219,7 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
             string modeloString = modelo;
             string marcaString = marca;
                 Vehiculo vehiculoDisponible(placaString,modeloString,marcaString,atoi(anio),chofer,sector,true);
-                lista[idOrigenSeleccionado]->insertarInicio(listaTemp,vehiculoDisponible);
+                lista[idOrigenSeleccionado].insertarInicio(listaTemp,vehiculoDisponible);
                 placasDisponibles.push_back(placa);  // Guarda la placa para identificar el vehículo después
                 disponible = true;
             }
@@ -236,8 +237,8 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     }
 
     cout << "\n\nVehiculos Disponibles." << endl << endl;
-    lista[idOrigenSeleccionado]->ordenarDescendente(listaTemp);
-    lista[idOrigenSeleccionado]->mostrar(listaTemp);
+    lista[idOrigenSeleccionado].ordenarDescendente(listaTemp);
+    lista[idOrigenSeleccionado].mostrar(listaTemp);
 
     // Permitir al usuario seleccionar el vehículo
     int seleccion;
@@ -290,7 +291,7 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     rename("Temp.txt", "Datos Vehiculo.txt");
 
     cout << "El vehiculo ha sido seleccionado y esta en camino." << endl;
-    lista[idOrigenSeleccionado]->BuscarVehiculo(listaTemp,seleccion-1);
+    lista[idOrigenSeleccionado].BuscarVehiculo(listaTemp,seleccion-1);
 }
 
 /**
@@ -356,7 +357,15 @@ void Traslado::RevisarCola(int id){
 		system("cls");
 		actual = actual->siguiente;
 	}
-}
+	
 
+}
+void Traslado::RevisarLista(int id){
+	if (lista[id].esVacia()) {  // Verifica si la lista está vacía
+        cout << "La lista en la posición " << id << " está vacía." << endl;
+    } else {
+        cout << "La lista en la posición " << id << " contiene elementos." << endl;
+    }
+}
 #endif
 

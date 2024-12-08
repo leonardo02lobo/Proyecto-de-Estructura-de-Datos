@@ -40,7 +40,7 @@ Sectores numeroSectores;
 Cola* colaSectores = new Cola[numeroSectores.numSectores];
 Cola** frente = new Cola*[numeroSectores.numSectores];
 Cola** final = new Cola*[numeroSectores.numSectores];
-Lista** lista = new Lista*[numeroSectores.numSectores];
+Lista* lista = new Lista[numeroSectores.numSectores];
 
 //funcion main encargada de la administracion del programa
 //llama a la funcion meni para iniciar el flujo del programa 
@@ -195,6 +195,7 @@ void MenuServicios(){
 			case 1:{
 				int id = vehiculo.ActualizarUbicacionVehiculo();
 				traslado.RevisarCola(id);
+				traslado.RevisarLista(id);
 				break;
 			}    
 			case 2: 
