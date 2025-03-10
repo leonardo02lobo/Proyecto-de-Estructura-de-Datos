@@ -9,21 +9,24 @@ class DatosGrafos {
 		int ID_Sector_Destino;
 		float Distancia;
 	public:
+		DatosGrafos(){
+			
+		}
 		DatosGrafos(int ID_Sector_Llegada,int ID_sector_Destino,float distancia){
 			this->ID_Sector_Llegada = ID_Sector_Llegada;
 			this->ID_Sector_Destino = ID_sector_Destino;
 			this->Distancia = distancia;
 		}
 		
-		public int getIDSectorLlegada(){
+		int getIDSectorLlegada(){
 			return ID_Sector_Llegada;
 		}
 		
-		public int getIDSectorDestino(){
+		int getIDSectorDestino(){
 			return ID_Sector_Destino;
 		}
 		
-		public int getDistancia(){
+		int getDistancia(){
 			return Distancia;
 		}
 };

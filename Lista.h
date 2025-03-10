@@ -9,7 +9,7 @@
 using namespace std;
 
 class Lista {
-private:
+public:
     Vehiculo info;
 	Lista *siguiente;
 

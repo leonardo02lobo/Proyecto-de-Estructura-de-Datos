@@ -9,6 +9,9 @@ Luis Alfonso Omaña Colmenares V-31.180.408
 #include <fstream> 
 #include <vector>
 #include <string>
+#include <sstream>
+#include <vector>
+#include <limits>
 #include "Usuario.h"
 #include "Vehiculo.h"
 #include "Chofer.h"
@@ -16,7 +19,9 @@ Luis Alfonso Omaña Colmenares V-31.180.408
 #include "Traslado.h"
 #include "Estadisticas.h"
 #include "Sectores.h"
- 
+#include "DatosGrafos.h"
+#include "Grafo.h"
+
 // Este metodo se crea para poder utilizar la funcion gotoxy
 // La funcion gotoxy posiciona el cursor en la consola en las coordenadas especificadas (x, y).
  void gotoxy(int x,int y){  
@@ -36,6 +41,7 @@ void MenuGestion();
 void MenuServicios(); 
 void MenuConductor();
 void MenuUsuarios();
+void GenerarGrafodesdeArchivo();
 Sectores numeroSectores;
 Cola* colaSectores = new Cola[numeroSectores.numSectores];
 Cola** frente = new Cola*[numeroSectores.numSectores];
@@ -178,10 +184,12 @@ void MenuServicios(){
 			gotoxy(30,13);
 			cout<<"4. Imprimir Reporte"<<endl;
 			gotoxy(30,15);
-			cout<<"5. Salir"<<endl;
+			cout<<"5. Generar Grafo de Sectores"<<endl;
 			gotoxy(30,17);
-			cout<<"Ingrese la opcion: "<<endl;
+			cout<<"6. Salir"<<endl;
 			gotoxy(30,19);
+			cout<<"Ingrese la opcion: "<<endl;
+			gotoxy(30,21);
 			cin>>opcion;
 
 			if(opcion < 1 || opcion > 5){
@@ -217,6 +225,9 @@ void MenuServicios(){
 				break;
 			}	
 			case 5:
+				GenerarGrafodesdeArchivo();
+				break;
+			case 6:
 				cout<<"Volver al Menu Anterior."<<endl;
 				break;
 		}
@@ -342,4 +353,65 @@ void MenuConductor(){
 	}while(opcion != 5);
 }
 
+void GenerarGrafodesdeArchivo(){
+	string nombreDelArchivo = "Grafo.txt";
+	ifstream file(nombreDelArchivo.c_str());
+	
+	if(!file.is_open()){
+		cout<<"no se pudo abrir el archivo 'Grafo.txt'"<<endl;
+		return;
+	}
+	
+	int maxSectores = 0;
+	vector<DatosGrafos> hijos;
+	
+	string linea;
+	while(getline(file,linea)){
+		int sectorLlegada,sectorDestino;
+		float distancia;
+		char coma;
+		stringstream ss(linea);
+		
+		ss >> sectorLlegada >>coma >> sectorDestino >> coma >> distancia;
+		
+		
+		maxSectores = max(maxSectores,max(sectorLlegada,sectorDestino));
+		
+		DatosGrafos datos(sectorLlegada,sectorDestino,distancia);
+		hijos.push_back(datos);
+	}
+	file.close();
+	
+	int N = maxSectores + 1;
+	int** adyacenciaMatriz = new int*[N];
+	for(int i = 0; i < N; i++){
+		adyacenciaMatriz[i] = new int[N];
+		for(int j = 0; j < N; j++){
+			adyacenciaMatriz[i][j] = 0;
+		}
+	}
+	
+	// Rellenar la matriz con las distancias
+	for (int i = 0; i < hijos.size(); ++i) {
+	    int sector1 = hijos[i].getIDSectorLlegada();
+	    int sector2 = hijos[i].getIDSectorDestino();
+	    int distancia = hijos[i].getDistancia();
+	
+	    adyacenciaMatriz[sector1][sector2] = distancia;
+	    adyacenciaMatriz[sector2][sector1] = distancia;  // Grafo no dirigido
+	}
+	// Mostrar la matriz de adyacencia
+    cout << "Matriz de adyacencia:" << endl;
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            cout << adyacenciaMatriz[i][j] << " ";
+        }
+        cout << endl;
+    }
 
+    // Liberar la memoria
+    for (int i = 0; i < N; ++i) {
+        delete[] adyacenciaMatriz[i];
+    }
+    delete[] adyacenciaMatriz;
+}
