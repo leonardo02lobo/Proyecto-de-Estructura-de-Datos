@@ -29,38 +29,6 @@ class DatosGrafos {
 		
 		int getDistancia(){
 			return Distancia;
-		}
-		
-		
-		
+		}	
 };
-
-// metodos auxiliares
-void DatosGrafos::mostrarVehiculosDisponibles() {
-    for (const auto &vehiculo : listaVehiculos) {
-        if (vehiculo.disponible) {
-            cout << "ID: " << vehiculo.id << ", Sector: " << vehiculo.sector << endl;
-        }
-    }
-}
-
-int DatosGrafos::obtenerSectorVehiculo(int idVehiculo) {
-    for (const auto &vehiculo : listaVehiculos) {
-        if (vehiculo.id == idVehiculo) {
-            return vehiculo.sector;
-        }
-    }
-    return -1; // No encontrado
-}
-
-void DatosGrafos::actualizarUbicacionVehiculo(int idVehiculo, int nuevoSector) {
-    for (auto &vehiculo : listaVehiculos) {
-        if (vehiculo.id == idVehiculo) {
-            vehiculo.sector = nuevoSector;
-            break;
-        }
-    }
-}
-
-
 #endif

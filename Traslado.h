@@ -11,8 +11,6 @@
 #include "Cola.h"
 #include "Lista.h"
 #include "Grafo.h"
-#include "DatosGrafos.h"
-
 
 using namespace std;
 
@@ -51,6 +49,7 @@ private:
 	Cola** final;
 	Lista* lista;
 	int idOrigenSeleccionado;
+	Grafo* grafo;
 
     /**
      * Carga los datos del usuario a partir de su cédula.
@@ -105,20 +104,35 @@ void Traslado::solicitar(Sectores& sectores) {
         }
     }
 
-    if (!band1) {
-        cout << "No se encuentra ningun vehiculo en el sector de origen. Por favor intentar mas tarde." << endl;
-        return;
-    } else if (!band2) {
+	if (!band2) {
         cout << "El ID del sector de destino no coincide con alguno dado. Por favor intentar mas tarde." << endl;
         return;
     }
+    
+    // Calcular la ruta mínima usando Dijkstra
+    int idOrigen = atoi(_sectorOrigen.getId().c_str());
+    int idDestino = atoi(_sectorDestino.getId().c_str());
+    pair<vector<DatosGrafos>, int> resultado = grafo->dijkstra(idOrigen, idDestino);
+	vector<DatosGrafos> ruta = resultado.first;
+	int distancia = resultado.second;
+    if (ruta.empty()) {
+        cout << "No hay ruta disponible entre los sectores seleccionados." << endl;
+        return;
+    }
+
+    cout << "Ruta mínima: ";
+    for (int i = 0; i < ruta.size();i++) {
+        cout <<"ID llegada: "<< ruta[i].getIDSectorLlegada()<<",ID Destino: "<< ruta[i].getIDSectorDestino()<<",Km: "<<ruta[i].getDistancia() << " -> ";
+    }
+    cout << "\b\b\b   \n";
+    cout << "Distancia total: " << distancia << " km" << endl;
 
     // Asignar fecha del traslado
     time_t now = time(0);
     _fecha = ctime(&now);
 
     // Seleccionar un vehículo disponible
-    idOrigenSeleccionado = atoi(idSectorOrigen.substr(2).c_str()) - 1;
+    idOrigenSeleccionado = atoi(idSectorDestino.substr(2).c_str()) - 1;
     seleccionarVehiculo(sectores);
     Usuario u;
     u.actualizarUsoApp(cedula);
@@ -204,28 +218,25 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     while (getline(archivo, linea)) {
         char* lineaChar = const_cast<char*>(linea.c_str());
         char* idSectorChar = strtok(lineaChar, ":");
+        char* nombreSector = strtok(NULL, ":");
+        char* cedula = strtok(NULL, ":");
+        char* nombreConductor = strtok(NULL, ":");
+        char* placa = strtok(NULL, ":");
+        char* modelo = strtok(NULL, ":");
+        char* marca = strtok(NULL, ":");
+        char* anio = strtok(NULL, ":");
+        char* disponibilidad = strtok(NULL, ":");
 
-        if (idSectorChar == _sectorOrigen.getId()) {
-            char* nombreSector = strtok(NULL, ":");
-            char* cedula = strtok(NULL, ":");
-            char* nombreConductor = strtok(NULL, ":");
-            char* placa = strtok(NULL, ":");
-            char* modelo = strtok(NULL, ":");
-            char* marca = strtok(NULL, ":");
-            char* anio = strtok(NULL, ":");
-            char* disponibilidad = strtok(NULL, ":");
-
-            if (disponibilidad != "1") {  // Verifica que el vehículo está disponible
+        if (disponibilidad != "1") {  // Verifica que el vehículo está disponible
             Chofer chofer(nombreConductor,atoi(cedula));
             Sector sector(idSectorChar,nombreSector);
             string placaString = placa;
             string modeloString = modelo;
             string marcaString = marca;
-                Vehiculo vehiculoDisponible(placaString,modeloString,marcaString,atoi(anio),chofer,sector,true);
-                lista[idOrigenSeleccionado].insertarInicio(listaTemp,vehiculoDisponible);
-                placasDisponibles.push_back(placa);  // Guarda la placa para identificar el vehículo después
-                disponible = true;
-            }
+            Vehiculo vehiculoDisponible(placaString,modeloString,marcaString,atoi(anio),chofer,sector,true);
+            lista[idOrigenSeleccionado].insertarInicio(listaTemp,vehiculoDisponible);
+            placasDisponibles.push_back(placa);  // Guarda la placa para identificar el vehículo después
+            disponible = true;
         }
     }
     archivo.close();
@@ -370,54 +381,5 @@ void Traslado::RevisarLista(int id){
         cout << "La lista en la posición " << id << " contiene elementos." << endl;
     }
 }
-
-//metodo para realizar el traslado aparte de todos los demas 
-void Traslado::realizarTraslado(Grafo &grafo, DatosGrafos &datos) {
-    int idVehiculo, sectorOrigen, sectorDestino;
-    
-    cout << "Ingrese ID del usuario: ";
-    int idUsuario;
-    cin >> idUsuario;
-    
-    cout << "Ingrese sector actual del usuario: ";
-    cin >> sectorOrigen;
-    
-    cout << "Ingrese sector destino: ";
-    cin >> sectorDestino;
-
-    // Mostrar vehículos disponibles en todos los sectores
-    cout << "Vehículos disponibles:\n";
-    datos.mostrarVehiculosDisponibles();
-    
-    cout << "Seleccione el ID del vehículo: ";
-    cin >> idVehiculo;
-
-    // Obtener sector donde está el vehículo seleccionado
-    int sectorVehiculo = datos.obtenerSectorVehiculo(idVehiculo);
-    
-    // Ruta mínima desde el vehículo hasta el usuario
-    vector<int> rutaVehiculoUsuario = grafo.rutaMinima(sectorVehiculo, sectorOrigen);
-    int distancia1 = grafo.obtenerDistanciaRuta(rutaVehiculoUsuario);
-    
-    cout << "Ruta para recoger al usuario:\n";
-    grafo.imprimirRuta(rutaVehiculoUsuario);
-    cout << "Distancia recorrida: " << distancia1 << " km\n";
-
-    // Ruta mínima desde el usuario hasta su destino
-    vector<int> rutaUsuarioDestino = grafo.rutaMinima(sectorOrigen, sectorDestino);
-    int distancia2 = grafo.obtenerDistanciaRuta(rutaUsuarioDestino);
-    
-    cout << "Ruta hacia el destino:\n";
-    grafo.imprimirRuta(rutaUsuarioDestino);
-    cout << "Distancia recorrida: " << distancia2 << " km\n";
-    
-    int distanciaTotal = distancia1 + distancia2;
-    cout << "Distancia total del traslado: " << distanciaTotal << " km\n";
-
-    // Actualizar datos del vehículo y usuario
-    datos.actualizarUbicacionVehiculo(idVehiculo, sectorDestino);
-}
-
-
 #endif
 

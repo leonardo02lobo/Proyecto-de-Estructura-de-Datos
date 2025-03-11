@@ -2,9 +2,15 @@
 #define GRAFOH
 
 #include "DatosGrafos.h"
+#include <vector>
+#include <queue>
+#include <limits>
+#include <iostream>
+#include <map>
+#include <algorithm>
 
 struct Node {
-    DatosGrafos datos;  // Datos del vértice
+    DatosGrafos datos;  // Datos del vï¿½rtice
     int peso;           // Peso de la arista
     Node* siguiente;    // Puntero al siguiente nodo
 
@@ -16,35 +22,32 @@ using namespace std;
 
 class Grafo {
 private:
-    Node** adyacencia;  // Array de listas enlazadas (lista de adyacencia)
-    int V;              // Número de vértices
-    DatosGrafos* vertices;  // Array de objetos DatosGrafos para identificar cada nodo
+    Node** adyacencia;
+    int V;
+    DatosGrafos* vertices;
 
 public:
-    // Constructor
     Grafo(int v) : V(v) {
-        adyacencia = new Node*[V];  // Inicializa el array de listas
+        adyacencia = new Node*[V];
         for (int i = 0; i < V; ++i) {
-            adyacencia[i] = NULL;  // Cada lista comienza vacía
+            adyacencia[i] = NULL;
         }
         vertices = new DatosGrafos[V];
     }
 
-    // Destructor
     ~Grafo() {
         for (int i = 0; i < V; ++i) {
             Node* valor = adyacencia[i];
             while (valor != NULL) {
                 Node* temp = valor;
                 valor = valor->siguiente;
-                delete temp;  // Libera memoria de cada nodo
+                delete temp;
             }
         }
-        delete[] adyacencia;  // Libera el array de listas
-        delete[] vertices;    // Libera el array de objetos DatosGrafos
+        delete[] adyacencia;
+        delete[] vertices;
     }
 
-    // Asignar un objeto DatosGrafos a un vértice específico
     void setVertice(int index, DatosGrafos dato) {
         if (index >= 0 && index < V) {
             vertices[index] = dato;
@@ -53,92 +56,87 @@ public:
         }
     }
 
-    // Agregar una arista ponderada entre dos vértices
     void agregar(int i, int j, int peso) {
-        appendNode(adyacencia[i], vertices[j], peso);  // Añade j a la lista de i con peso
-        appendNode(adyacencia[j], vertices[i], peso);  // Añade i a la lista de j con peso (no dirigido)
+        appendNode(adyacencia[i], vertices[j], peso);
+        appendNode(adyacencia[j], vertices[i], peso); // No dirigido
     }
 
-    // Mostrar la lista de adyacencia
-    void print() const {
-        for (int i = 0; i < V; ++i) {
-            cout << "Nodo " << vertices[i].getDistancia() << " conectado a: ";
-            Node* valor = adyacencia[i];
-            while (valor != NULL) {
-                cout << "(" << valor->datos.getDistancia() << ", " << valor->peso << ") ";
-                valor = valor->siguiente;
-            }
-            cout << endl;
+    pair<vector<DatosGrafos>, int> dijkstra(int start_index, int end_index) const {
+        if (start_index < 0 || start_index >= V || end_index < 0 || end_index >= V) {
+            cout << "Error: Índices fuera de rango." << endl;
+            return {{}, -1};
         }
+
+        map<int, pair<int, int> > distances; // {distancia, nodo_previo}
+        for (int i = 0; i < V; ++i) {
+            distances[i] = {numeric_limits<int>::max(), -1};
+        }
+        distances[start_index] = {0, -1};
+
+        std::priority_queue<
+	    std::pair<int, int>, 
+	    std::vector<std::pair<int, int> >, 
+	    std::greater<std::pair<int, int> > // Especifica el tipo aquí
+		> pq;
+        pq.push({0, start_index});
+
+        while (!pq.empty()) {
+            pair<int, int> top_pair = pq.top(); // Especifica el tipo explícitamente
+			int current_dist = top_pair.first;
+			int current_node = top_pair.second;
+            pq.pop();
+
+            if (current_dist > distances[current_node].first) continue;
+
+            if (current_node == end_index) break;
+
+            Node* neighbor = adyacencia[current_node];
+            while (neighbor != NULL) {
+                int neighbor_index = findIndex(neighbor->datos);
+                int new_dist = current_dist + neighbor->peso;
+
+                if (new_dist < distances[neighbor_index].first) {
+                    distances[neighbor_index] = {new_dist, current_node};
+                    pq.push({new_dist, neighbor_index});
+                }
+
+                neighbor = neighbor->siguiente;
+            }
+        }
+
+        vector<DatosGrafos> path;
+        int current = end_index;
+        while (current != -1) {
+            path.push_back(vertices[current]);
+            current = distances[current].second;
+        }
+        reverse(path.begin(), path.end());
+
+        return {path, distances[end_index].first};
     }
 
 private:
-    // Función auxiliar para añadir nodos al final de la lista
     void appendNode(Node*& cabeza, DatosGrafos vertice, int peso) const {
         Node* nuevoNodo = new Node(vertice, peso);
         if (cabeza == NULL) {
-            cabeza = nuevoNodo;  // Si la lista está vacía, el nuevo nodo es el primero
+            cabeza = nuevoNodo;
         } else {
             Node* valor = cabeza;
             while (valor->siguiente != NULL) {
-                valor = valor->siguiente;  // Avanza hasta el último nodo
+                valor = valor->siguiente;
             }
-            valor->siguiente = nuevoNodo;  // Conecta el nuevo nodo al final
+            valor->siguiente = nuevoNodo;
         }
+    }
+
+    int findIndex(DatosGrafos& dato) const {
+        for (int i = 0; i < V; ++i) {
+            if (vertices[i].getDistancia() == dato.getDistancia()) {
+                return i;
+            }
+        }
+        return -1;
     }
 };
-
-//Métodos auxiliares para encontrar rutas
-
-vector<int> Grafo::rutaMinima(int origen, int destino) {
-    int n = matrizAdyacencia.size();
-    vector<int> dist(n, INT_MAX);
-    vector<int> previo(n, -1);
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-
-    dist[origen] = 0;
-    pq.push({0, origen});
-
-    while (!pq.empty()) {
-        int actual = pq.top().second;
-        pq.pop();
-
-        for (int i = 0; i < n; i++) {
-            if (matrizAdyacencia[actual][i] > 0) { // Hay conexión
-                int nuevaDist = dist[actual] + matrizAdyacencia[actual][i];
-
-                if (nuevaDist < dist[i]) {
-                    dist[i] = nuevaDist;
-                    previo[i] = actual;
-                    pq.push({nuevaDist, i});
-                }
-            }
-        }
-    }
-
-    vector<int> ruta;
-    for (int at = destino; at != -1; at = previo[at]) {
-        ruta.push_back(at);
-    }
-    reverse(ruta.begin(), ruta.end());
-    return ruta;
-}
-
-int Grafo::obtenerDistanciaRuta(vector<int> ruta) {
-    int distancia = 0;
-    for (size_t i = 0; i < ruta.size() - 1; i++) {
-        distancia += matrizAdyacencia[ruta[i]][ruta[i + 1]];
-    }
-    return distancia;
-}
-
-void Grafo::imprimirRuta(vector<int> ruta) {
-    for (size_t i = 0; i < ruta.size(); i++) {
-        cout << ruta[i];
-        if (i < ruta.size() - 1) cout << " -> ";
-    }
-    cout << endl;
-}
-
 
 #endif
