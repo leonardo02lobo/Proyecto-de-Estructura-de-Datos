@@ -10,6 +10,9 @@
 #include "Sectores.h"
 #include "Cola.h"
 #include "Lista.h"
+#include "Grafo.h"
+#include "DatosGrafos.h"
+
 
 using namespace std;
 
@@ -367,5 +370,54 @@ void Traslado::RevisarLista(int id){
         cout << "La lista en la posición " << id << " contiene elementos." << endl;
     }
 }
+
+//metodo para realizar el traslado aparte de todos los demas 
+void Traslado::realizarTraslado(Grafo &grafo, DatosGrafos &datos) {
+    int idVehiculo, sectorOrigen, sectorDestino;
+    
+    cout << "Ingrese ID del usuario: ";
+    int idUsuario;
+    cin >> idUsuario;
+    
+    cout << "Ingrese sector actual del usuario: ";
+    cin >> sectorOrigen;
+    
+    cout << "Ingrese sector destino: ";
+    cin >> sectorDestino;
+
+    // Mostrar vehículos disponibles en todos los sectores
+    cout << "Vehículos disponibles:\n";
+    datos.mostrarVehiculosDisponibles();
+    
+    cout << "Seleccione el ID del vehículo: ";
+    cin >> idVehiculo;
+
+    // Obtener sector donde está el vehículo seleccionado
+    int sectorVehiculo = datos.obtenerSectorVehiculo(idVehiculo);
+    
+    // Ruta mínima desde el vehículo hasta el usuario
+    vector<int> rutaVehiculoUsuario = grafo.rutaMinima(sectorVehiculo, sectorOrigen);
+    int distancia1 = grafo.obtenerDistanciaRuta(rutaVehiculoUsuario);
+    
+    cout << "Ruta para recoger al usuario:\n";
+    grafo.imprimirRuta(rutaVehiculoUsuario);
+    cout << "Distancia recorrida: " << distancia1 << " km\n";
+
+    // Ruta mínima desde el usuario hasta su destino
+    vector<int> rutaUsuarioDestino = grafo.rutaMinima(sectorOrigen, sectorDestino);
+    int distancia2 = grafo.obtenerDistanciaRuta(rutaUsuarioDestino);
+    
+    cout << "Ruta hacia el destino:\n";
+    grafo.imprimirRuta(rutaUsuarioDestino);
+    cout << "Distancia recorrida: " << distancia2 << " km\n";
+    
+    int distanciaTotal = distancia1 + distancia2;
+    cout << "Distancia total del traslado: " << distanciaTotal << " km\n";
+
+    // Actualizar datos del vehículo y usuario
+    datos.actualizarUbicacionVehiculo(idVehiculo, sectorDestino);
+}
+
+
 #endif
 

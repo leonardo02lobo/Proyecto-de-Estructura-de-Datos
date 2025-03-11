@@ -88,4 +88,57 @@ private:
     }
 };
 
+//Métodos auxiliares para encontrar rutas
+
+vector<int> Grafo::rutaMinima(int origen, int destino) {
+    int n = matrizAdyacencia.size();
+    vector<int> dist(n, INT_MAX);
+    vector<int> previo(n, -1);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+    dist[origen] = 0;
+    pq.push({0, origen});
+
+    while (!pq.empty()) {
+        int actual = pq.top().second;
+        pq.pop();
+
+        for (int i = 0; i < n; i++) {
+            if (matrizAdyacencia[actual][i] > 0) { // Hay conexión
+                int nuevaDist = dist[actual] + matrizAdyacencia[actual][i];
+
+                if (nuevaDist < dist[i]) {
+                    dist[i] = nuevaDist;
+                    previo[i] = actual;
+                    pq.push({nuevaDist, i});
+                }
+            }
+        }
+    }
+
+    vector<int> ruta;
+    for (int at = destino; at != -1; at = previo[at]) {
+        ruta.push_back(at);
+    }
+    reverse(ruta.begin(), ruta.end());
+    return ruta;
+}
+
+int Grafo::obtenerDistanciaRuta(vector<int> ruta) {
+    int distancia = 0;
+    for (size_t i = 0; i < ruta.size() - 1; i++) {
+        distancia += matrizAdyacencia[ruta[i]][ruta[i + 1]];
+    }
+    return distancia;
+}
+
+void Grafo::imprimirRuta(vector<int> ruta) {
+    for (size_t i = 0; i < ruta.size(); i++) {
+        cout << ruta[i];
+        if (i < ruta.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+}
+
+
 #endif
