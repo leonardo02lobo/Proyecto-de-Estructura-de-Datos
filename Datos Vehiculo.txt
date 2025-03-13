@@ -1,9 +1,8 @@
-ID3:Centro:02345678:Juan Perez:ABC-031:Golf:Volkswagen:2018:0:N_3
-ID2:Pirineos:23456789:Maria Gomez:ABC-032:Civic:Honda:2020:0:N_8
-ID3:Centro:34567890:Jose Rodriguez:ABC-033:Corolla:Toyota:2019:0:N_26
-ID4:La Concordia:45678901:Ana Martinez:ABC-034:Tucson:Hyundai:2022:0:N_9
-ID5:Los Chaguaramos:56789012:Carlos Hernandez:ABC-035:Renegade:Jeep:2021:1:N_0
-ID6:San Juan:67890123:Lucia Fernandez:ABC-036:Mustang:Ford:2020:1:N_0
+ID3:Centro:02345678:Juan Perez:ABC-031:Golf:Volkswagen:2018:ID2:Pirineos:23456789:Maria Gomez:ABC-032:Civic:Honda:2020:0:N_8
+ID3:Centro:34567890:Jose Rodriguez:ABC-033:Corolla:Toyota:2019:0:N_27
+ID4:La Concordia:45678901:Ana Martinez:ABC-034:Tucson:Hyundai:2022:0:N_10
+ID5:Los Chaguaramos:56789012:Carlos Hernandez:ABC-035:Renegade:Jeep:2021:0:N_1
+ID6:San Juan:67890123:Lucia Fernandez:ABC-036:Mustang:Ford:2020:0:N_2
 ID7:El Cementerio:78901234:Pedro Morales:ABC-037:CX-5:Mazda:2019:1:N_0
 ID8:La Castra:89012345:Susana Lopez:ABC-038:X3:BMW:2021:1:N_0
 ID9:La Popa:90123456:Andres Blanco:ABC-039:Wrangler:Jeep:2020:1:N_0
@@ -12,7 +11,7 @@ ID1:Barrio Obrero:22334455:Ricardo Diaz:ABC-041:GLC:Mercedes-Benz:2021:0:N_1
 ID2:Pirineos:33445566:Valeria Santos:ABC-042:Accord:Honda:2019:0:N_1
 ID3:Centro:44556677:Luis Romero:ABC-043:Sonata:Hyundai:2020:0:N_2
 ID4:La Concordia:55667788:Mariana Medina:ABC-044:X5:BMW:2022:0:N_6
-ID5:Los Chaguaramos:66778899:Daniel Suarez:ABC-045:Sportage:Kia:2021:1:N_0
+ID5:Los Chaguaramos:66778899:Daniel Suarez:ABC-045:Sportage:Kia:2021:0:N_1
 ID6:San Juan:77889900:Laura Vargas:ABC-046:Compass:Jeep:2022:1:N_0
 ID7:El Cementerio:88990011:Jorge Castillo:ABC-047:Outlander:Mitsubishi:2020:1:N_0
 ID8:La Castra:99001122:Manuel Jimenez:ABC-048:Trailblazer:Chevrolet:2018:1:N_0

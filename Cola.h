@@ -5,6 +5,7 @@
 using namespace std;
 
 class Cola{
+
 	public:
 		Usuario usuarios;
 		Cola* siguiente;
@@ -35,6 +36,7 @@ class Cola{
 				final == NULL;
 			}
 		}
+
 		void mostrarCola(Cola* frente) {
 		    Cola* actual = frente;
 		    while (actual != NULL) {
@@ -43,10 +45,12 @@ class Cola{
 		    }
 		    cout << "NULL" << endl;
 		}
+
 		void eliminarUsuario(Cola*& frente,Cola*& final,Usuario elemento) {
+			
 			bool band = false;
 	        if (frente == NULL) {
-	            cout << "La cola está vacía." << endl;
+	            cout << "La cola esta vacia." << endl;
 	            return;
 	        }
 	
@@ -55,14 +59,14 @@ class Cola{
 	
 	        while (actual != NULL) {
 	            if (actual->usuarios.getCedula() == elemento.getCedula()) {
-	                if (anterior == NULL) { // El usuario a eliminar es el primero
+	                if (anterior == NULL) { 
 	                    frente = actual->siguiente;
-	                    if (frente == NULL) { // Si la cola queda vacía
+	                    if (frente == NULL) { 
 	                        final = NULL;
 	                    }
 	                } else {
 	                    anterior->siguiente = actual->siguiente;
-	                    if (actual == final) { // Si el usuario a eliminar es el último
+	                    if (actual == final) { 
 	                        final = anterior;
 	                    }
 	                }
@@ -74,6 +78,7 @@ class Cola{
 	            anterior = actual;
 	            actual = actual->siguiente;
 	        }
+
 		if(!band){
 			cout << "Usuario no encontrado en la cola." << endl;
 		}
