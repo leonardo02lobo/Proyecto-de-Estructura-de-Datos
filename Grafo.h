@@ -62,58 +62,63 @@ public:
     }
 
     pair<vector<DatosGrafos>, int> dijkstra(int start_index, int end_index) const {
-        if (start_index < 0 || start_index >= V || end_index < 0 || end_index >= V) {
-            cout << "Error: Índices fuera de rango." << endl;
-            return {{}, -1};
-        }
-
-        map<int, pair<int, int> > distances; // {distancia, nodo_previo}
-        for (int i = 0; i < V; ++i) {
-            distances[i] = {numeric_limits<int>::max(), -1};
-        }
-        distances[start_index] = {0, -1};
-
-        std::priority_queue<
-	    std::pair<int, int>, 
-	    std::vector<std::pair<int, int> >, 
-	    std::greater<std::pair<int, int> > // Especifica el tipo aquí
-		> pq;
-        pq.push({0, start_index});
-
-        while (!pq.empty()) {
-            pair<int, int> top_pair = pq.top(); // Especifica el tipo explícitamente
-			int current_dist = top_pair.first;
-			int current_node = top_pair.second;
-            pq.pop();
-
-            if (current_dist > distances[current_node].first) continue;
-
-            if (current_node == end_index) break;
-
-            Node* neighbor = adyacencia[current_node];
-            while (neighbor != NULL) {
-                int neighbor_index = findIndex(neighbor->datos);
-                int new_dist = current_dist + neighbor->peso;
-
-                if (new_dist < distances[neighbor_index].first) {
-                    distances[neighbor_index] = {new_dist, current_node};
-                    pq.push({new_dist, neighbor_index});
-                }
-
-                neighbor = neighbor->siguiente;
-            }
-        }
-
-        vector<DatosGrafos> path;
-        int current = end_index;
-        while (current != -1) {
-            path.push_back(vertices[current]);
-            current = distances[current].second;
-        }
-        reverse(path.begin(), path.end());
-
-        return {path, distances[end_index].first};
+    if (start_index < 0 || start_index >= V || end_index < 0 || end_index >= V) {
+        cout << "Error: Índices fuera de rango." << endl;
+        return make_pair(vector<DatosGrafos>(), -1);
     }
+
+    map<int, pair<int, int> > distances;
+    for (int i = 0; i < V; ++i) {
+        distances[i].first = numeric_limits<int>::max();
+        distances[i].second = -1;
+    }
+    distances[start_index].first = 0;
+
+    priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > pq;
+    pq.push(make_pair(0, start_index));
+
+    while (!pq.empty()) {
+        pair<int, int> top_pair = pq.top();
+        int current_dist = top_pair.first;
+        int current_node = top_pair.second;
+        pq.pop();
+
+        if (current_dist > distances[current_node].first) continue;
+        if (current_node == end_index) break;
+
+        Node* neighbor = adyacencia[current_node];
+        while (neighbor != NULL) {
+            int neighbor_index = findIndex(neighbor->datos);
+            int new_dist = current_dist + neighbor->peso;
+
+            if (new_dist < distances[neighbor_index].first) {
+                distances[neighbor_index].first = new_dist;
+                distances[neighbor_index].second = current_node;
+                pq.push(make_pair(new_dist, neighbor_index));
+            }
+
+            neighbor = neighbor->siguiente;
+        }
+    }
+
+    if (distances[end_index].first == numeric_limits<int>::max()) {
+        cout << "No existe un camino entre los nodos seleccionados." << endl;
+        return make_pair(vector<DatosGrafos>(), -1);
+    }
+
+    vector<DatosGrafos> path;
+    int current = end_index;
+    while (current != -1) {
+        path.push_back(vertices[current]);
+        current = distances[current].second;
+    }
+    reverse(path.begin(), path.end());
+
+    cout << "Distancia total del recorrido: " << distances[end_index].first << " km" << endl;
+
+    return make_pair(path, distances[end_index].first);
+}
+
 
 private:
     void appendNode(Node*& cabeza, DatosGrafos vertice, int peso) const {

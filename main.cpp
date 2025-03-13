@@ -42,19 +42,26 @@ void MenuServicios();
 void MenuConductor();
 void MenuUsuarios();
 void GenerarGrafodesdeArchivo();
+void LiberarGrafo();
 Sectores numeroSectores;
 Cola* colaSectores = new Cola[numeroSectores.numSectores];
 Cola** frente = new Cola*[numeroSectores.numSectores];
 Cola** final = new Cola*[numeroSectores.numSectores];
 Lista* lista = new Lista[numeroSectores.numSectores];
+int** adyacenciaMatriz = NULL; // Matriz global para almacenar el grafo
+int N = 0; // Tamaño de la matriz
+
 
 //funcion main encargada de la administracion del programa
 //llama a la funcion meni para iniciar el flujo del programa 
 int main(int argc, char** argv) {
-	//llama al menu si todo salio bien 
-	Menu();
-	return 0;
+    GenerarGrafodesdeArchivo();
+    Menu();
+    LiberarGrafo(); // Liberar memoria antes de finalizar el programa
+    return 0;
 }
+
+
 
 //metodo encargado de la generar el menu con las opciones para poder gestionar a los usuarios o gestionar los servicios diarios
 void Menu(){
@@ -354,64 +361,74 @@ void MenuConductor(){
 }
 
 void GenerarGrafodesdeArchivo(){
-	string nombreDelArchivo = "Grafo.txt";
-	ifstream file(nombreDelArchivo.c_str());
-	
-	if(!file.is_open()){
-		cout<<"no se pudo abrir el archivo 'Grafo.txt'"<<endl;
-		return;
-	}
-	
-	int maxSectores = 0;
-	vector<DatosGrafos> hijos;
-	
-	string linea;
-	while(getline(file,linea)){
-		int sectorLlegada,sectorDestino;
-		float distancia;
-		char coma;
-		stringstream ss(linea);
-		
-		ss >> sectorLlegada >>coma >> sectorDestino >> coma >> distancia;
-		
-		
-		maxSectores = max(maxSectores,max(sectorLlegada,sectorDestino));
-		
-		DatosGrafos datos(sectorLlegada,sectorDestino,distancia);
-		hijos.push_back(datos);
-	}
-	file.close();
-	
-	int N = maxSectores + 1;
-	int** adyacenciaMatriz = new int*[N];
-	for(int i = 0; i < N; i++){
-		adyacenciaMatriz[i] = new int[N];
-		for(int j = 0; j < N; j++){
-			adyacenciaMatriz[i][j] = 0;
-		}
-	}
-	
-	// Rellenar la matriz con las distancias
-	for (int i = 0; i < hijos.size(); ++i) {
-	    int sector1 = hijos[i].getIDSectorLlegada();
-	    int sector2 = hijos[i].getIDSectorDestino();
-	    int distancia = hijos[i].getDistancia();
-	
-	    adyacenciaMatriz[sector1][sector2] = distancia;
-	    adyacenciaMatriz[sector2][sector1] = distancia;  // Grafo no dirigido
-	}
-	// Mostrar la matriz de adyacencia
-    cout << "Matriz de adyacencia:" << endl;
+    string nombreDelArchivo = "Grafo.txt";
+    ifstream file(nombreDelArchivo.c_str());
+
+    if (!file.is_open()) {
+        cout << "No se pudo abrir el archivo 'Grafo.txt'" << endl;
+        return;
+    }
+
+    int maxSectores = 0;
+    vector<DatosGrafos> hijos;
+    string linea;
+
+    while (getline(file, linea)) {
+        int sectorLlegada, sectorDestino;
+        float distancia;
+        char coma;
+        stringstream ss(linea);
+
+        ss >> sectorLlegada >> coma >> sectorDestino >> coma >> distancia;
+
+        maxSectores = max(maxSectores, max(sectorLlegada, sectorDestino));
+
+        DatosGrafos datos(sectorLlegada, sectorDestino, distancia);
+        hijos.push_back(datos);
+    }
+    file.close();
+
+    // Crear la matriz global con el tamaño correcto
+    N = maxSectores + 1;
+    adyacenciaMatriz = new int*[N];
+    for (int i = 0; i < N; i++) {
+        adyacenciaMatriz[i] = new int[N];
+        for (int j = 0; j < N; j++) {
+            adyacenciaMatriz[i][j] = (i == j) ? 0 : numeric_limits<int>::max();
+        }
+    }
+
+    // Rellenar la matriz con las distancias
+    for (int i = 0; i < hijos.size();i++) {
+        int sector1 = hijos[i].getIDSectorLlegada();
+        int sector2 = hijos[i].getIDSectorDestino();
+        int distancia = hijos[i].getDistancia();
+
+        adyacenciaMatriz[sector1][sector2] = distancia;
+        adyacenciaMatriz[sector2][sector1] = distancia;  // Grafo no dirigido
+    }
+
+    // Mostrar la matriz de adyacencia
+    cout << "Matriz de adyacencia generada:" << endl;
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
-            cout << adyacenciaMatriz[i][j] << " ";
+            if (adyacenciaMatriz[i][j] == numeric_limits<int>::max())
+                cout << "8 ";
+            else
+                cout << adyacenciaMatriz[i][j] << " ";
         }
         cout << endl;
     }
-
-    // Liberar la memoria
-    for (int i = 0; i < N; ++i) {
-        delete[] adyacenciaMatriz[i];
-    }
-    delete[] adyacenciaMatriz;
 }
+
+void LiberarGrafo() {
+    if (adyacenciaMatriz != NULL) {
+        for (int i = 0; i < N; ++i) {
+            delete[] adyacenciaMatriz[i];
+        }
+        delete[] adyacenciaMatriz;
+        adyacenciaMatriz = NULL;
+    }
+}
+
+

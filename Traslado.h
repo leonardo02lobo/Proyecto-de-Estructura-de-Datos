@@ -16,7 +16,7 @@ using namespace std;
 
 /**
  * Clase que representa el sistema de traslado de usuarios.
- * Permite solicitar un traslado y finalizarlo, gestionando la disponibilidad de vehículos.
+ * Permite solicitar un traslado y finalizarlo, gestionando la disponibilidad de vehï¿½culos.
  */
 class Traslado {
 public:
@@ -24,13 +24,13 @@ public:
 	Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final,Lista*& lista);
     /**
      * Solicita un traslado para un usuario.
-     * @param sectores Referencia a la clase Sectores que contiene la información de los sectores disponibles.
+     * @param sectores Referencia a la clase Sectores que contiene la informaciï¿½n de los sectores disponibles.
      */
     void solicitar(Sectores& sectores);
 
     /**
-     * Finaliza un traslado y actualiza la disponibilidad del vehículo.
-     * @param placaVehiculo Placa del vehículo a marcar como disponible.
+     * Finaliza un traslado y actualiza la disponibilidad del vehï¿½culo.
+     * @param placaVehiculo Placa del vehï¿½culo a marcar como disponible.
      */
     void finalizarTraslado(const string& placaVehiculo);
     
@@ -52,15 +52,15 @@ private:
 	Grafo* grafo;
 
     /**
-     * Carga los datos del usuario a partir de su cédula.
-     * @param cedula Cédula del usuario a buscar.
+     * Carga los datos del usuario a partir de su cï¿½dula.
+     * @param cedula Cï¿½dula del usuario a buscar.
      * @return true si el usuario fue encontrado, false en caso contrario.
      */
     bool cargarUsuarioPorCedula(int cedula);
 
     /**
-     * Selecciona un vehículo disponible en el sector de origen.
-     * @param sectores Referencia a la clase Sectores que contiene la información de los sectores disponibles.
+     * Selecciona un vehï¿½culo disponible en el sector de origen.
+     * @param sectores Referencia a la clase Sectores que contiene la informaciï¿½n de los sectores disponibles.
      */
     void seleccionarVehiculo(Sectores& sectores);
 };
@@ -68,20 +68,19 @@ Traslado::Traslado(Cola*& colaSectores,Cola**& frente,Cola**& final,Lista*& list
 	 : colaSectores(colaSectores), frente(frente), final(final),lista(lista) {
 }
 /**
- * Implementación del método solicitar que permite a un usuario solicitar un traslado.
+ * Implementaciï¿½n del mï¿½todo solicitar que permite a un usuario solicitar un traslado.
  */
 void Traslado::solicitar(Sectores& sectores) {
-    bool band1 = false;
-    bool band2 = false;
+    bool band1 = false, band2 = false;
     cout << "Solicitar Traslado" << endl;
 
+    // Solicitar datos del usuario y sectores
     string cedula;
-    cout << "Ingrese la cédula del usuario: ";
+    cout << "Ingrese la cedula del usuario: ";
     cin >> cedula;
     int cedulaInt = atoi(cedula.c_str());
     GuardarInformacionUsuarios(cedulaInt);
 
-    // Solicitar los sectores de origen y destino
     cout << "Ingrese el ID del sector de origen. Ejemplo: ID#: ";
     string idSectorOrigen;
     cin >> idSectorOrigen;
@@ -104,39 +103,47 @@ void Traslado::solicitar(Sectores& sectores) {
         }
     }
 
-	if (!band2) {
-        cout << "El ID del sector de destino no coincide con alguno dado. Por favor intentar mas tarde." << endl;
+    if (!band2) {
+        cout << "El ID del sector de destino no coincide con alguno dado. Por favor intentar más tarde." << endl;
         return;
     }
-    
-    // Calcular la ruta mínima usando Dijkstra
-    int idOrigen = atoi(_sectorOrigen.getId().c_str());
-    int idDestino = atoi(_sectorDestino.getId().c_str());
+
+    // Cálculo de la ruta mínima desde el sector de origen hasta el destino
+    int idOrigen = atoi(_sectorOrigen.getId().substr(2).c_str());
+    int idDestino = atoi(_sectorDestino.getId().substr(2).c_str());
+
     pair<vector<DatosGrafos>, int> resultado = grafo->dijkstra(idOrigen, idDestino);
-	vector<DatosGrafos> ruta = resultado.first;
-	int distancia = resultado.second;
+    vector<DatosGrafos> ruta = resultado.first;
+    int distancia = resultado.second;
+
     if (ruta.empty()) {
         cout << "No hay ruta disponible entre los sectores seleccionados." << endl;
         return;
     }
 
-    cout << "Ruta mínima: ";
-    for (int i = 0; i < ruta.size();i++) {
-        cout <<"ID llegada: "<< ruta[i].getIDSectorLlegada()<<",ID Destino: "<< ruta[i].getIDSectorDestino()<<",Km: "<<ruta[i].getDistancia() << " -> ";
-    }
-    cout << "\b\b\b   \n";
-    cout << "Distancia total: " << distancia << " km" << endl;
+    // Mostrar la ruta mínima usando un for simple
+	cout << "Ruta minima: ";
+	for (int i = 0; i < ruta.size(); i++) {
+	    cout << "ID llegada: " << ruta[i].getIDSectorLlegada() 
+	         << ", ID Destino: " << ruta[i].getIDSectorDestino() 
+	         << ", Km: " << ruta[i].getDistancia() << " -> ";
+	}
+	cout << "\b\b\b   \n";  // Elimina la última flecha innecesaria
+	cout << "Distancia total: " << distancia << " km" << endl;
+
 
     // Asignar fecha del traslado
     time_t now = time(0);
     _fecha = ctime(&now);
 
-    // Seleccionar un vehículo disponible
+    // Buscar vehículo disponible en la mejor ruta posible
     idOrigenSeleccionado = atoi(idSectorDestino.substr(2).c_str()) - 1;
     seleccionarVehiculo(sectores);
+
     Usuario u;
     u.actualizarUsoApp(cedula);
 }
+
 
 void Traslado::GuardarInformacionUsuarios(int cedula){
 	ifstream archivo("Datos Usuarios.txt");
@@ -165,8 +172,8 @@ void Traslado::GuardarInformacionUsuarios(int cedula){
 }
 
 /**
- * Carga los datos del usuario a partir de su cédula desde el archivo de usuarios.
- * @param cedula Cédula del usuario a buscar.
+ * Carga los datos del usuario a partir de su cï¿½dula desde el archivo de usuarios.
+ * @param cedula Cï¿½dula del usuario a buscar.
  * @return true si el usuario fue encontrado, false en caso contrario.
  */
 bool Traslado::cargarUsuarioPorCedula(int cedula) {
@@ -197,8 +204,8 @@ bool Traslado::cargarUsuarioPorCedula(int cedula) {
 }
 
 /**
- * Selecciona un vehículo disponible en el sector de origen.
- * @param sectores Referencia a la clase Sectores que contiene la información de los sectores disponibles.
+ * Selecciona un vehï¿½culo disponible en el sector de origen.
+ * @param sectores Referencia a la clase Sectores que contiene la informaciï¿½n de los sectores disponibles.
  */
 void Traslado::seleccionarVehiculo(Sectores& sectores) {
 	Lista* listaTemp = NULL;
@@ -207,14 +214,14 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     bool disponible = false;
 
     if (!archivo.is_open()) {
-        cout << "Error al abrir el archivo de vehículos." << endl;
+        cout << "Error al abrir el archivo de vehï¿½culos." << endl;
         return;
     }
 
     string linea;
     vector<string> placasDisponibles;
 
-    // Buscar vehículos disponibles
+    // Buscar vehï¿½culos disponibles
     while (getline(archivo, linea)) {
         char* lineaChar = const_cast<char*>(linea.c_str());
         char* idSectorChar = strtok(lineaChar, ":");
@@ -227,7 +234,7 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
         char* anio = strtok(NULL, ":");
         char* disponibilidad = strtok(NULL, ":");
 
-        if (disponibilidad != "1") {  // Verifica que el vehículo está disponible
+        if (disponibilidad != "1") {  // Verifica que el vehï¿½culo estï¿½ disponible
             Chofer chofer(nombreConductor,atoi(cedula));
             Sector sector(idSectorChar,nombreSector);
             string placaString = placa;
@@ -235,7 +242,7 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
             string marcaString = marca;
             Vehiculo vehiculoDisponible(placaString,modeloString,marcaString,atoi(anio),chofer,sector,true);
             lista[idOrigenSeleccionado].insertarInicio(listaTemp,vehiculoDisponible);
-            placasDisponibles.push_back(placa);  // Guarda la placa para identificar el vehículo después
+            placasDisponibles.push_back(placa);  // Guarda la placa para identificar el vehï¿½culo despuï¿½s
             disponible = true;
         }
     }
@@ -254,17 +261,17 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
     lista[idOrigenSeleccionado].ordenarDescendente(listaTemp);
     lista[idOrigenSeleccionado].mostrar(listaTemp);
 
-    // Permitir al usuario seleccionar el vehículo
+    // Permitir al usuario seleccionar el vehï¿½culo
     int seleccion;
     cout << "Seleccione el numero del vehiculo para iniciar el traslado: ";
     cin >> seleccion;
-    // Validar la selección del usuario
+    // Validar la selecciï¿½n del usuario
     if (seleccion < 1 || seleccion > placasDisponibles.size()) {
         cout << "Seleccion invalida. Intente de nuevo." << endl;
         return;
     }
 
-    // Actualizar la disponibilidad del vehículo seleccionado
+    // Actualizar la disponibilidad del vehï¿½culo seleccionado
     string placaSeleccionada = placasDisponibles[seleccion - 1];
     ifstream archivoLectura("Datos Vehiculo.txt", ios::in);
     ofstream archivoEscritura("Temp.txt", ios::out);
@@ -288,7 +295,7 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
             ostringstream oss;
             oss << "N_" << numeroVeces;
             NVecesFinal = oss.str();
-            // Cambia la disponibilidad a 0 en la línea seleccionada
+            // Cambia la disponibilidad a 0 en la lï¿½nea seleccionada
             size_t pos = linea.rfind(":1");
             if (pos != string::npos) linea.replace(pos, 2, ":0");
 
@@ -309,44 +316,70 @@ void Traslado::seleccionarVehiculo(Sectores& sectores) {
 }
 
 /**
- * Finaliza un traslado y actualiza la disponibilidad del vehículo.
- * @param placaVehiculo Placa del vehículo a marcar como disponible.
+ * Finaliza un traslado y actualiza la disponibilidad del vehï¿½culo.
+ * @param placaVehiculo Placa del vehï¿½culo a marcar como disponible.
  */
 void Traslado::finalizarTraslado(const string& placaVehiculo) {
+    // Buscar el sector de origen del vehículo
+    int idSectorVehiculo = -1;
     ifstream archivoLectura("Datos Vehiculo.txt");
-    ofstream archivoEscritura("Temp.txt");
-
-    if (!archivoLectura.is_open()) {
-        cout << "Error al abrir el archivo de vehículos." << endl;
-        return;
-    }
-
     string linea;
-    bool actualizado = false;
 
     while (getline(archivoLectura, linea)) {
         if (linea.find(placaVehiculo) != string::npos) {
-            // Cambia la disponibilidad a 1 en la línea del vehículo correspondiente
+            char* lineaChar = const_cast<char*>(linea.c_str());
+            char* idSectorChar = strtok(lineaChar, ":");
+            idSectorVehiculo = atoi(idSectorChar + 2); // Extrae el ID del sector
+            break;
+        }
+    }
+    archivoLectura.close();
+
+    if (idSectorVehiculo == -1) {
+        cout << "No se encontró el vehículo con la placa especificada." << endl;
+        return;
+    }
+
+    // Buscar la ruta mínima de regreso a la base (Ejemplo: ID Base = 1)
+    pair<vector<DatosGrafos>, int> resultado = grafo->dijkstra(idSectorVehiculo, 1);
+    vector<DatosGrafos> ruta = resultado.first;
+    int distancia = resultado.second;
+
+    if (ruta.empty()) {
+        cout << "No hay ruta disponible para el regreso del vehículo." << endl;
+        return;
+    }
+
+    cout << "Ruta mínima de regreso: ";
+    for (int i = 0; i < ruta.size(); i++) {
+        cout << "ID llegada: " << ruta[i].getIDSectorLlegada() 
+             << ", ID Destino: " << ruta[i].getIDSectorDestino() 
+             << ", Km: " << ruta[i].getDistancia() << " -> ";
+    }
+    cout << "\b\b\b   \n";
+    cout << "Distancia total: " << distancia << " km" << endl;
+
+    // Actualizar el archivo de vehículos para marcar como disponible
+    ifstream archivoLectura2("Datos Vehiculo.txt");
+    ofstream archivoEscritura("Temp.txt");
+
+    while (getline(archivoLectura2, linea)) {
+        if (linea.find(placaVehiculo) != string::npos) {
             size_t pos = linea.rfind(":0");
             if (pos != string::npos) {
-                linea.replace(pos, 2, ":1");  // Actualiza la disponibilidad a 1
-                actualizado = true;
+                linea.replace(pos, 2, ":1");  
             }
         }
         archivoEscritura << linea << endl;
     }
 
-    archivoLectura.close();
+    archivoLectura2.close();
     archivoEscritura.close();
 
     remove("Datos Vehiculo.txt");
     rename("Temp.txt", "Datos Vehiculo.txt");
 
-    if (actualizado) {
-        cout << "El vehiculo con placa " << placaVehiculo << " ha sido marcado como disponible." << endl;
-    } else {
-        cout << "No se encontro el vehiculo con la placa especificada o ya estaba disponible." << endl;
-    }
+    cout << "El vehículo con placa " << placaVehiculo << " ha sido marcado como disponible y ha regresado a la base." << endl;
 }
 
 void Traslado::RevisarCola(int id){
@@ -375,10 +408,10 @@ void Traslado::RevisarCola(int id){
 
 }
 void Traslado::RevisarLista(int id){
-	if (lista[id].esVacia()) {  // Verifica si la lista está vacía
-        cout << "La lista en la posición " << id << " está vacía." << endl;
+	if (lista[id].esVacia()) {  // Verifica si la lista estï¿½ vacï¿½a
+        cout << "La lista en la posiciï¿½n " << id << " estï¿½ vacï¿½a." << endl;
     } else {
-        cout << "La lista en la posición " << id << " contiene elementos." << endl;
+        cout << "La lista en la posiciï¿½n " << id << " contiene elementos." << endl;
     }
 }
 #endif
